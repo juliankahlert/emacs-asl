@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Check out source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Install build tools
         run: |
@@ -38,10 +38,50 @@ jobs:
           rpm -qp --requires "$rpm_package" | grep -Fxq emacs-filesystem
           rpm -qpl "$rpm_package" | grep -Fq '/asl-mode.el'
 
-      - name: Store package artifacts
-        uses: actions/upload-artifact@v4
+      - name: Store packages
+        uses: actions/upload-artifact@v6
         with:
           name: emacs-asl-packages
           path: dist/*
           if-no-files-found: error
           retention-days: 14
+
+  test-deb:
+    needs: test-and-package
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Download packages
+        uses: actions/download-artifact@v6
+        with:
+          name: emacs-asl-packages
+          path: packages
+
+      - name: Install Debian package
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y emacs-nox ./packages/*.deb
+
+      - name: Open an ASL file with Emacs
+        run: |
+          emacs --batch --eval '(with-current-buffer (find-file-noselect "package-smoke.asl") (unless (eq major-mode (quote asl-mode)) (error "ASL mode did not load")))'
+
+  test-rpm:
+    needs: test-and-package
+    runs-on: ubuntu-24.04
+    container: fedora:44
+    steps:
+      - name: Install Emacs
+        run: dnf install -y emacs
+
+      - name: Download packages
+        uses: actions/download-artifact@v6
+        with:
+          name: emacs-asl-packages
+          path: packages
+
+      - name: Install RPM package
+        run: dnf install -y packages/emacs-asl-*.rpm
+
+      - name: Open an ASL file with Emacs
+        run: |
+          emacs --batch --eval '(with-current-buffer (find-file-noselect "package-smoke.dsl") (unless (eq major-mode (quote asl-mode)) (error "ASL mode did not load")))'
