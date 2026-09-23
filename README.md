@@ -65,6 +65,8 @@ are in [examples/upstream/README.md](examples/upstream/README.md).
 ## Install Emacs, iASL, and the mode
 
 Run `just install` to install Emacs, ACPICA's `iasl` compiler, and `asl-mode`.
+Run `just reinstall` to force reinstall Emacs and ACPICA's compiler, then
+reinstall `asl-mode`.
 The mode is installed system-wide and loaded automatically when Emacs starts;
 restart any Emacs session that was already open during installation.
 The target supports Debian and Ubuntu with `apt-get`, and Fedora and related

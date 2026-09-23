@@ -1,7 +1,12 @@
 version := `cat VERSION`
 
 # Install Emacs, ACPICA iASL, and the ASL mode.
-install:
+install: (_install "false")
+
+# Force reinstall Emacs and ACPICA iASL, then reinstall the ASL mode.
+reinstall: (_install "true")
+
+_install force:
     #!/usr/bin/env bash
     set -euo pipefail
     site_start_dir=/usr/share/emacs/site-lisp/site-start.d
@@ -15,12 +20,24 @@ install:
     fi
     if command -v apt-get >/dev/null 2>&1; then
       "${root[@]}" apt-get update
-      "${root[@]}" apt-get install -y emacs acpica-tools
+      if [[ "{{force}}" == "true" ]]; then
+        "${root[@]}" apt-get install --reinstall -y emacs acpica-tools
+      else
+        "${root[@]}" apt-get install -y emacs acpica-tools
+      fi
       site_start_dir=/etc/emacs/site-start.d
     elif command -v dnf >/dev/null 2>&1; then
-      "${root[@]}" dnf install -y emacs acpica-tools
+      if [[ "{{force}}" == "true" ]]; then
+        "${root[@]}" dnf reinstall -y emacs acpica-tools
+      else
+        "${root[@]}" dnf install -y emacs acpica-tools
+      fi
     elif command -v yum >/dev/null 2>&1; then
-      "${root[@]}" yum install -y emacs acpica-tools
+      if [[ "{{force}}" == "true" ]]; then
+        "${root[@]}" yum reinstall -y emacs acpica-tools
+      else
+        "${root[@]}" yum install -y emacs acpica-tools
+      fi
     else
       echo "Supported package managers: apt-get, dnf, and yum." >&2
       exit 1
