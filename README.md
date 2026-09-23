@@ -55,12 +55,14 @@ that compiles with ACPICA's `iasl` compiler.
 original project environment to compile. Their source links and license details
 are in [examples/upstream/README.md](examples/upstream/README.md).
 
-## Install system tools
+## Install Emacs, iASL, and the mode
 
-Run `just install` to install Emacs and ACPICA's `iasl` compiler. The target
-supports Debian and Ubuntu with `apt-get`, and Fedora and related RPM systems
-with `dnf` or `yum`. It uses `sudo` when it runs as a regular user. Install
-`just` separately before running this command.
+Run `just install` to install Emacs, ACPICA's `iasl` compiler, and `asl-mode`.
+The mode is installed system-wide and loaded automatically when Emacs starts;
+restart any Emacs session that was already open during installation.
+The target supports Debian and Ubuntu with `apt-get`, and Fedora and related
+RPM systems with `dnf` or `yum`. It uses `sudo` when it runs as a regular user.
+Install `just` separately before running this command.
 
 ## Build packages
 
@@ -81,6 +83,8 @@ package manager. For example:
 sudo apt install ./dist/emacs-asl_*_all.deb
 sudo dnf install ./dist/emacs-asl-*.noarch.rpm
 ```
+
+Both packages install a startup file that loads `asl-mode` automatically.
 
 ## Checks
 

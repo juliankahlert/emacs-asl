@@ -1,9 +1,10 @@
 version := `cat VERSION`
 
-# Install Emacs and ACPICA iASL.
+# Install Emacs, ACPICA iASL, and the ASL mode.
 install:
     #!/usr/bin/env bash
     set -euo pipefail
+    site_start_dir=/usr/share/emacs/site-lisp/site-start.d
     if [[ "$EUID" -eq 0 ]]; then
       root=()
     elif command -v sudo >/dev/null 2>&1; then
@@ -15,6 +16,7 @@ install:
     if command -v apt-get >/dev/null 2>&1; then
       "${root[@]}" apt-get update
       "${root[@]}" apt-get install -y emacs acpica-tools
+      site_start_dir=/etc/emacs/site-start.d
     elif command -v dnf >/dev/null 2>&1; then
       "${root[@]}" dnf install -y emacs acpica-tools
     elif command -v yum >/dev/null 2>&1; then
@@ -23,6 +25,10 @@ install:
       echo "Supported package managers: apt-get, dnf, and yum." >&2
       exit 1
     fi
+    mode_dir=/usr/share/emacs/site-lisp/asl-mode
+    "${root[@]}" install -d "$mode_dir" "$site_start_dir"
+    "${root[@]}" install -pm 0644 asl-mode.el "$mode_dir/asl-mode.el"
+    "${root[@]}" install -pm 0644 packaging/asl-mode-init.el "$site_start_dir/50asl-mode.el"
 
 # Build the Emacs Lisp tests.
 test:
