@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-and-package:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Install build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y just emacs-nox acpica-tools dpkg-dev rpm
+
+      - name: Test and compile example
+        run: just all
+
+      - name: Build Debian and RPM packages
+        run: just deb rpm
+
+      - name: Check package metadata and contents
+        run: |
+          deb_package=$(find dist -name '*.deb' -print -quit)
+          rpm_package=$(find dist -name '*.rpm' -print -quit)
+          test "$(dpkg-deb --field "$deb_package" Package)" = emacs-asl
+          dpkg-deb --field "$deb_package" Depends | grep -Fq 'emacs (>= 26.1)'
+          dpkg-deb --contents "$deb_package" | grep -Fq '/asl-mode.el'
+          test "$(rpm -qp --qf '%{NAME}' "$rpm_package")" = emacs-asl
+          rpm -qp --requires "$rpm_package" | grep -Fxq 'emacs >= 26.1'
+          rpm -qp --requires "$rpm_package" | grep -Fxq emacs-filesystem
+          rpm -qpl "$rpm_package" | grep -Fq '/asl-mode.el'
+
+      - name: Store package artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: emacs-asl-packages
+          path: dist/*
+          if-no-files-found: error
+          retention-days: 14

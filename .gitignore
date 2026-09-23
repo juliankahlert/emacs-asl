@@ -53,3 +53,9 @@ dkms.conf
 
 # debug information files
 *.dwo
+
+# Built package artifacts
+dist/
+
+# Temporary package build files
+.build/

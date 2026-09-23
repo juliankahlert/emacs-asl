@@ -1,0 +1,9 @@
+Package: emacs-asl
+Version: @VERSION@
+Section: editors
+Priority: optional
+Architecture: all
+Depends: emacs (>= 26.1), emacsen-common (>= 2.0.8)
+Maintainer: Julian Kahlert <90937526+juliankahlert@users.noreply.github.com>
+Description: ACPI Source Language mode for Emacs
+ Syntax highlighting for ACPI Source Language (ASL) files in Emacs.
