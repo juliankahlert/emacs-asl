@@ -3,7 +3,9 @@
 `emacs-asl` provides `asl-mode`, an Emacs major mode for ACPI Source Language.
 It highlights ASL declarations, methods, devices, operators, resource
 descriptors, constants, namespace names, numbers, preprocessor directives,
-comments, and strings.
+comments, and strings. It also supports nested-block indentation, continued
+argument alignment, comment commands, and Imenu navigation for methods, devices,
+and scopes.
 
 Emacs selects `asl-mode` for files with the `.asl`, `.dsl`, and `.asi`
 extensions.
@@ -44,6 +46,11 @@ selects `asl-mode` based on the file extension. For example, opening
 `examples/simple-device.asl` loads the mode and highlights the source.
 
 To enable the mode in an already open buffer, run `M-x asl-mode`.
+
+Use `TAB` to indent the current line. Nested blocks indent by four columns by
+default; customize `asl-mode-indent-offset` to change the indentation step.
+When Emacs' Electric Indent mode is enabled, pressing `RET` or typing a closing
+brace also reindents the line automatically.
 
 ## Examples
 
